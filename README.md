@@ -1,4 +1,23 @@
+README.md file containing the following:
+project description and goals
+data dictionary
+project planning
+Initial ideas/hypotheses stated
+instructions for recreating project/running repo
+
+
+
+
+
+
+
 # telco_churn_project
+
+## Project description and Goals
+
+This project will use data from a telco company and come up with a best-fit model to predict churn among the customers.
+
+## Data Dictionary
 
 | Attribute                | Definition                                                           | Data Type |
 |--------------------------|----------------------------------------------------------------------|-----------|
@@ -28,5 +47,5 @@
 | payment_type             | How a customer pays their bill each month                            | object    |
 
 
-
+## Project Planning
 
