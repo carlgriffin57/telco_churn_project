@@ -1,17 +1,8 @@
-README.md file containing the following:
-project description and goals
-data dictionary
-project planning
-Initial ideas/hypotheses stated
-instructions for recreating project/running repo
 
+# Telco churn project
 
-
-
-
-
-
-# telco_churn_project
+### Carl Griffin
+### June 2021
 
 ## Project description and Goals
 
@@ -49,3 +40,25 @@ This project will use data from a telco company and come up with a best-fit mode
 
 ## Project Planning
 
+1.  Pull in the telco data
+2.  Investigate the data to postulate drivers of churn
+3.  Hypothesize the drivers of churn
+4.  Determine irrevelant data and drop that data
+5.  Clean the data by converting into numerical values
+6.  Split the data into train, validate and test
+7.  Run several models
+8.  Determine best model
+9.  Run that model on the test data
+10. Reformat the data into a csv file showing who's likely to churn or not churn
+
+## Initial Ideas
+
+Check to see if month-to-month vs contracts causes churn.
+Check to see if senior citizens vs non-senior citizens causes churn.
+
+## Instructions for recreating project
+
+Using Jupyter notebook:
+Have an env.py file containing your hostname, username and password
+Grab the acquire.py and prepare.py files
+Execute the telco_churn_final.ipynb file
