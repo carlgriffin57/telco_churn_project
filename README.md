@@ -54,11 +54,15 @@ This project will use data from a telco company and come up with a best-fit mode
 ## Initial Ideas
 
 Check to see if month-to-month vs contracts causes churn.
+
 Check to see if senior citizens vs non-senior citizens causes churn.
 
 ## Instructions for recreating project
 
 Using Jupyter notebook:
+
 Have an env.py file containing your hostname, username and password
+
 Grab the acquire.py and prepare.py files
+
 Execute the telco_churn_final.ipynb file
