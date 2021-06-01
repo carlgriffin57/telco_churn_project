@@ -1,86 +1,66 @@
+##### IMPORTS #####
 import pandas as pd
 import numpy as np
-import os
+
 from sklearn.model_selection import train_test_split
-from sklearn.impute import SimpleImputer
-# from env import host, username, password
 
-def prep_iris(df):
+##### TELCO PREP #####
+def prep_telco_data(df):
+    # ************************Telco Prep***********************************
     '''
-        This function accepts the untransformed iris data and returns the data with tranformations applied.
+    This function handles nulls, duplicates, strings, encoding_columns and then return the df
     '''
-    df = df.drop(columns=(['species_id', 'measurement_id']))
-    df = df.rename(columns = {'species_name':'species'})
-    dummy_df = pd.get_dummies(df[['species']], dummy_na = False, drop_first=[True])
-    df = pd.concat([df, dummy_df], axis=1)
-    return df
+    # drop any duplicates
+    df.drop_duplicates(inplace=True)
+    
+    # fill any empty spaces with np.nan
+    df.replace(' ', np.nan, inplace=True)
+    
+    # drop rows that contain null values, they are a small percentage
+    df.dropna(axis=0, inplace=True)
+    
+    # convert total_charges to a numeric data type
+    df = df.astype({'total_charges': 'float64'})
 
-# ************************************ TITANIC DATA***********************************
-def titanic_split(df):
+    # No computations will be done on 'customer_id' so make that column the index.
+    df.set_index('customer_id', drop=True, inplace=True)
+    
+    # Encode the columns that need encoding
+    df.partner = df.partner.replace({'Yes': 1, 'No': 0})
+    df.dependents = df.dependents.replace({'Yes': 1, 'No': 0})
+    df.online_security = df.online_security.replace({'No internet service': 0, 'Yes': 1, 'No': 0})
+    df.online_backup = df.online_backup.replace({'No internet service': 0, 'Yes': 1, 'No': 0}) 
+    df.device_protection = df.device_protection.replace({'No internet service': 0, 'Yes': 1, 'No': 0})
+    df.streaming_tv = df.streaming_tv.replace({'No internet service': 0, 'Yes': 1, 'No': 0})
+    df.streaming_movies = df.streaming_movies.replace({'No internet service': 0, 'Yes': 1, 'No': 0})
+    df.paperless_billing = df.paperless_billing.replace({'Yes': 1, 'No': 0})
+    df.gender = df.gender.replace({'Male': 1, 'Female': 0})
+    df.phone_service = df.phone_service.replace({'Yes': 1, 'No': 0})
+    df.multiple_lines = df.multiple_lines.replace({'No phone service': 0, 'Yes': 1, 'No': 0})
+    df.tech_support = df.tech_support.replace({'No internet service': 0, 'Yes': 1, 'No': 0})
+    df.churn = df.churn.replace({'Yes': 1, 'No': 0})
+    df.contract_type = df.contract_type.replace({'Month-to-month': 0, 'One year': 1, 'Two year': 2})
+    df.payment_type = df.payment_type.replace({'Mailed check': 0, 'Credit card (automatic)': 1, 'Bank transfer (automatic)': 1, 'Bank transfer (automatic)': 1, 'Electronic check': 0})
+
+    # Combine simliar columns and drop the individual ones
+    df['online services'] = df.online_security + df.online_backup
+    df = df.drop(columns = ['online_security', 'online_backup'])
+    df['streaming_services'] = df.streaming_tv + df.streaming_movies
+    df = df.drop(columns=['streaming_tv', 'streaming_movies'])
+    return(df)
+
+
+
+def telco_split(df):
     '''
-    This function take in the titanic data acquired by get_titanic_data,
-    performs a split and stratifies survived column.
+    This function takes in the telco data acquired by get_telco_data,
+    performs a split and stratifies churn column.
     Returns train, validate, and test dfs.
-    '''
+     '''
     train_validate, test = train_test_split(df, test_size=.2, 
-                                        random_state=123, 
-                                        stratify=df.survived)
+                                           random_state=123, 
+                                          stratify=df.churn)
     train, validate = train_test_split(train_validate, test_size=.3, 
-                                   random_state=123, 
-                                   stratify=train_validate.survived)
-    return train, validate, test
-
-
-
-def impute_mean_age(train, validate, test):
-    '''
-    This function imputes the mean of the age column for
-    observations with missing values.
-    Returns transformed train, validate, and test df.
-    '''
-    # create the imputer object with mean strategy
-    imputer = SimpleImputer(strategy = 'mean')
-    
-    # fit on and transform age column in train
-    train['age'] = imputer.fit_transform(train[['age']])
-    
-    # transform age column in validate
-    validate['age'] = imputer.transform(validate[['age']])
-    
-    # transform age column in test
-    test['age'] = imputer.transform(test[['age']])
-    
-    return train, validate, test
-
-
-def prep_titanic_data(df, column, method ,dummies):
-    '''
-    takes in a dataframe of the titanic dataset that was  acquired before and returns a cleaned dataframe
-    arguments:
-    - df: a pandas DataFrame with the expected feature names and columns
-    - column : the name of the column to fill or impute the missing values in
-    - method: type of strategy (median, mean, most_frequent) for SimpleImputer
-    - dummies: list of columns to create a dummy variable 
-    return: 
-    train, validate, test (three dataframes with the cleaning operations performed on them)
-    '''
-    #clean data
-    df = df.drop_duplicates()
-    df = df.drop(columns=['deck', 'embark_town', 'class'])
-    
-    #create a dummy df
-    dummy_df = pd.get_dummies(df[dummies], drop_first=[True, True])
-    ## Concatenate the dummy_df dataframe above with the original df
-    df = pd.concat([df, dummy_df], axis=1)
-    
-    # drop the deck column
-    df = df.drop(columns= dummies)
-    #split data
-    
-    # split data into train, validate, test dfs
-    train, validate, test = titanic_split(df)
-
-    # impute the chosen strategy (median)  for  the selected column (age) into null values in age column
-    train, validate, test = impute_mean_age(train, validate, test)
-   
+                                       random_state=123, 
+                                       stratify=train_validate.churn)
     return train, validate, test
